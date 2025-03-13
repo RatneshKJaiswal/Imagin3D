@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imagin3D - 2D to 3D Reconstruction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Three.js for 3D visualization - Fixed imports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-cube"></i> Imagin3D</h1>
+            <p>Transform 2D images into 3D models using AI</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="info-section">
+            <div class="info-card">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <h3>How It Works</h3>
+                    <p>Our AI analyzes your 2D image and reconstructs it as a 3D model using vision transformers and voxel-based reconstruction.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="upload-section">
+            <h2>Upload an Image</h2>
+            <p>Select a clear image of an object to convert into a 3D model</p>
+
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="file-input-container">
+                    <input type="file" id="image-input" name="image" accept="image/*" required>
+                    <label for="image-input" class="file-label">
+                        <i class="fas fa-upload"></i> Choose File
+                    </label>
+                    <span id="file-name">No file chosen</span>
+                </div>
+
+                <button type="submit" id="upload-btn">
+                    <i class="fas fa-cube"></i> Generate 3D Model
+                </button>
+            </form>
+        </section>
+
+        <section class="result-section" id="result-section">
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your image...</p>
+                <p class="small">This may take up to 30 seconds</p>
+            </div>
+
+            <div class="results" id="results">
+                <div class="result-container">
+                    <div class="result-item">
+                        <h3>Original Image</h3>
+                        <div class="image-container">
+                            <img id="original-image" src="" alt="Original Image">
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <h3>3D Model</h3>
+                        <div id="3d-preview" class="model-container"></div>
+                        <div class="controls-help">
+                            <p><i class="fas fa-mouse"></i> Drag to rotate | Scroll to zoom</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <a id="download-btn" href="#" class="download-btn">
+                        <i class="fas fa-download"></i> Download 3D Model (.obj)
+                    </a>
+                </div>
+            </div>
+
+            <div class="error" id="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p id="error-text"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Powered by Imagin3D - AI 3D Model Reconstruction</p>
+            <p class="small">Using Vision Transformer & 3D Voxel Reconstruction</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

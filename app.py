@@ -8,17 +8,24 @@ import open3d as o3d
 from PIL import Image
 from torchvision import transforms
 from transformers import ViTModel
+from huggingface_hub import hf_hub_download
 
 app = Flask(__name__)
 
 # Configure upload folder
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 OUTPUT_FOLDER = os.path.join('static', 'outputs')
+MODEL_CACHE_DIR = os.path.join('models', 'cache')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+os.makedirs(MODEL_CACHE_DIR, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-app.config['MODEL_PATH'] = 'models/optimized_lrgt_3d_reconstruction.pth'
+app.config['MODEL_CACHE_DIR'] = MODEL_CACHE_DIR
+
+# Hugging Face model configuration
+app.config['HF_MODEL_ID'] = 'Ratnesh007/optimized_lrgt_3d_reconstruction'  # Replace with your actual username/model-id
+app.config['LOCAL_MODEL_PATH'] = 'models/optimized_lrgt_3d_reconstruction.pth'  # Fallback to local model if HF fails
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 # Check if CUDA is available
@@ -46,19 +53,53 @@ model = None
 def load_model():
     global model
     if model is None:
-        model_path = app.config['MODEL_PATH']
-        if not os.path.exists(model_path):
-            print(f"Error: Model file not found at {model_path}")
-            return None
+        model = Simple3DModel().to(device)
 
         try:
-            model = Simple3DModel().to(device)
-            model.load_state_dict(torch.load(model_path, map_location=device))
-            model.eval()
-            print("Model loaded successfully")
+            # First try loading from Hugging Face Hub
+            print(f"Attempting to load model from Hugging Face: {app.config['HF_MODEL_ID']}")
+
+            from huggingface_hub import snapshot_download
+            # Download the model files from HF Hub
+            model_dir = snapshot_download(
+                repo_id=app.config['HF_MODEL_ID'],
+                cache_dir=app.config['MODEL_CACHE_DIR'],
+                allow_patterns=["*.pth", "*.bin", "*.json", "*.model", "*.pt"],
+                local_files_only=False  # Set to True if you want to use only cached files
+            )
+
+            # Find the model file in the downloaded directory
+            model_files = [f for f in os.listdir(model_dir) if f.endswith(('.pth', '.pt', '.bin'))]
+            if model_files:
+                model_path = os.path.join(model_dir, model_files[0])
+                print(f"Loading model from Hugging Face: {model_path}")
+                model.load_state_dict(torch.load(model_path, map_location=device))
+                model.eval()
+                print("Model loaded successfully from Hugging Face Hub")
+                return model
+            else:
+                print("No model weights found in the downloaded files")
+
         except Exception as e:
-            print(f"Error loading model: {str(e)}")
+            print(f"Error loading model from Hugging Face: {str(e)}")
+            print("Falling back to local model...")
+
+        # Fallback to local model if Hugging Face fails
+        try:
+            local_model_path = app.config['LOCAL_MODEL_PATH']
+            if os.path.exists(local_model_path):
+                print(f"Loading local model from: {local_model_path}")
+                model.load_state_dict(torch.load(local_model_path, map_location=device))
+                model.eval()
+                print("Local model loaded successfully")
+                return model
+            else:
+                print(f"Error: Local model file not found at {local_model_path}")
+                return None
+        except Exception as e:
+            print(f"Error loading local model: {str(e)}")
             return None
+
     return model
 
 
@@ -283,6 +324,37 @@ def save_as_obj(voxel_data, filename):
     return True, "3D model generated successfully."
 
 
+# Define endpoint for model info
+@app.route('/model-info')
+def model_info():
+    """Return information about the currently loaded model"""
+    try:
+        # Check if model is loaded
+        global model
+        if model is None:
+            load_model()
+
+        if model is None:
+            return jsonify({
+                'status': 'error',
+                'message': 'Model failed to load'
+            })
+
+        # Get model information
+        return jsonify({
+            'status': 'success',
+            'model_type': 'Simple3DModel',
+            'source': app.config['HF_MODEL_ID'],
+            'device': str(device),
+            'encoder': 'ViT-Base'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        })
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -357,4 +429,4 @@ def download_file(filename):
 
 if __name__ == '__main__':
     # app.run(debug=True)
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -73,4 +73,28 @@ This project is licensed under the MIT License.
 
 - Vision Transformer (ViT) research community  
 - Javascript and Flask documentation  
-- Three.js for 3D visualization  
+- Three.js for 3D visualization
+
+## 🎓 Representation Diagrams :-
+
+### Fig.1. Web Page Sample
+
+![Screenshot 2025-05-16 093548](https://github.com/user-attachments/assets/173871e6-645d-4be5-888c-bb6258a4785a)
+
+### Fig.2. Training loss and accuracy graph
+
+![Screenshot 2025-04-22 233604](https://github.com/user-attachments/assets/21db74fe-fd38-457a-b5e9-b6c5aeec5b93)
+
+### Fig.3. Project Management Timeline
+
+![Screenshot 2025-05-16 010930](https://github.com/user-attachments/assets/bcd86ee3-6a8b-4f28-8474-ab16ce3bbffc)
+
+### Fig.4. ER Diagram
+
+![Screenshot 2025-05-16 014517](https://github.com/user-attachments/assets/22d9be32-c3b6-442d-91bd-de5ed4455b5d)
+
+### Fig.5. Data Flow Diagram
+
+![Screenshot 2025-05-16 012939](https://github.com/user-attachments/assets/5548f6aa-34a5-4d7e-b673-fc5cb55559a7)
+![Screenshot 2025-05-16 013005](https://github.com/user-attachments/assets/201e692e-cd37-44d9-827e-bb2c89eb6747)
+![Screenshot 2025-05-16 013029](https://github.com/user-attachments/assets/10d560a8-5456-4d0d-843a-4b091804864c)

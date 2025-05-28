@@ -77,9 +77,11 @@ This project is licensed under the MIT License.
 
 ## 🎓 Representation Diagrams :-
 
-### Fig.1. Web Page Sample
+### Fig.1. Web Page Sample and Preview Video
 
 ![Screenshot 2025-05-16 093548](https://github.com/user-attachments/assets/173871e6-645d-4be5-888c-bb6258a4785a)
+
+https://github.com/user-attachments/assets/19101d34-36b7-4804-a3fa-0c5e238e7e18
 
 ### Fig.2. Training loss and accuracy graph
 
